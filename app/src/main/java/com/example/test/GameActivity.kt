@@ -10,9 +10,9 @@ class GameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_game)
     }
 
-
-
-
+    fun checkGit(){
+        println("Git?")
+    }
 
 
 
