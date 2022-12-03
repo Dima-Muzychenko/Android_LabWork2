@@ -22,9 +22,13 @@ class GameActivity : AppCompatActivity() {
 
 
 
+<<<<<<< HEAD
 
 
     //потім реалізувати зберігання стану
+=======
+    // потім реалізувати зберігання стану
+>>>>>>> a701735 (hey)
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
     }
