@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Test</string>
+    <string name="reaction_speed">Speed Reaction</string>
+    <string name="net_size">розмір сітки</string>
+    <string name="timer">таймер</string>
+    <string name="change_frequency">частота зміни</string>
+</resources>
