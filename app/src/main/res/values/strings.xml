@@ -4,4 +4,5 @@
     <string name="net_size">розмір сітки</string>
     <string name="timer">таймер</string>
     <string name="change_frequency">частота зміни</string>
+    <string name="confirm">Confirm</string>
 </resources>

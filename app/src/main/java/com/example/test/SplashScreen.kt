@@ -34,7 +34,7 @@ class SplashScreen : AppCompatActivity(){
                 startActivity(intent)
                 finish()
             }
-        }, 10000) // 3000 is the delayed time in milliseconds.
+        }, 3000) // 3000 is the delayed time in milliseconds.
         //при натисканні на екран
         binding.splashScreenID.setOnClickListener { closeSplashScreen() }
 

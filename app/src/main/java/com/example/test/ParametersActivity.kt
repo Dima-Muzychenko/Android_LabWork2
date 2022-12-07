@@ -1,5 +1,6 @@
 package com.example.test
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -13,6 +14,11 @@ class ParametersActivity : AppCompatActivity() {
     lateinit var adapter1: ArrayAdapter<SizeOfMatrix>
     lateinit var adapter2: ArrayAdapter<Timer>
     lateinit var adapter3: ArrayAdapter<RangeOfTime>
+    var SIZE_OF_MATRIX: Int = 3
+    var TIMER: Int = 15
+    var MIN_FREQUENCY: Float = 1f
+    var MAX_FREQUENCY: Float = 1.5f
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,23 +29,53 @@ class ParametersActivity : AppCompatActivity() {
         setUpTimerWithAdapter()
         setUpRangeWithAdapter()
 
-        //викликаємо ShowInfoAboutCell
-        binding.sellSize.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        //викликаємо ShowInfoAboutCell (у нас onItemSelectedListener спрацьовує навіть одразу при викликанні
+        //сторінки налаштувань, бо в Spinner ми одразу відображаемо 1 значення)
+        binding.matrixSize.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 adapter1.getItem(position)?.let { ShowInfoAboutCell(it) }//let-перевірка на null
             }
-            override fun onNothingSelected(p0: AdapterView<*>?) {
+            override fun onNothingSelected(p0: AdapterView<*>?) {//у нас завжди щось вибрано
             }
         }
+
+        binding.timer.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                TIMER = adapter2.getItem(position)?.meaning?:throw java.lang.IllegalArgumentException("meaning is null")
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {//у нас завжди щось вибрано
+            }
+        }
+
+        binding.speedRange.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                MIN_FREQUENCY = adapter3.getItem(position)?.min?:throw java.lang.IllegalArgumentException("meaning is null")
+                MAX_FREQUENCY = adapter3.getItem(position)?.max?:throw java.lang.IllegalArgumentException("meaning is null")
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {//у нас завжди щось вибрано
+            }
+        }
+
+        binding.confirmButton.setOnClickListener{onConfirmButtonClicked()}
     }
 
+    private fun onConfirmButtonClicked(){
+        val intent = Intent(this, GameActivity::class.java)
+        intent.putExtra(GameActivity.size_of_matrix,SIZE_OF_MATRIX)//передаємо дані типу ключ-значення в
+        intent.putExtra(GameActivity.timer,TIMER)//intent. Тобто передаємо в іншу Activity
+        intent.putExtra(GameActivity.min_frequency,MIN_FREQUENCY)
+        intent.putExtra(GameActivity.max_frequency,MAX_FREQUENCY)
+        startActivity(intent)
 
-    //метод, щоб перевірити, чи можна з Spinner витягнути всю інформацію про елемент,
+    }
+
+    //тестовий метод, щоб перевірити, чи можна з Spinner витягнути всю інформацію про елемент,
     //а не тільки текст який в ньому записаний
     private fun ShowInfoAboutCell(size: SizeOfMatrix) {
         var meaning = size.meaning
         var text = size.name
         println("meaning=$meaning,text=$text")
+        SIZE_OF_MATRIX=meaning
     }
 
     private fun setUpSizeSpinnerWithAdapter() {
@@ -51,7 +87,7 @@ class ParametersActivity : AppCompatActivity() {
         adapter1 = ArrayAdapter(this,
             android.R.layout.simple_list_item_1,
             data)
-        binding.sellSize.adapter=adapter1 //призначаємо adapter1 до нашого sellSize Spinner
+        binding.matrixSize.adapter=adapter1 //призначаємо adapter1 до нашого sellSize Spinner
     }
 
     private fun setUpTimerWithAdapter() {
@@ -84,13 +120,13 @@ class ParametersActivity : AppCompatActivity() {
         }
     }
 
-    class Timer(private val name: String, val meaning: Int){
+    class Timer(val name: String, val meaning: Int){
         override fun toString(): String {
             return name
         }
     }
 
-    class RangeOfTime(private val name: String, val min: Float, val max: Float){
+    class RangeOfTime(val name: String, val min: Float, val max: Float){
         override fun toString(): String {
             return name
         }
