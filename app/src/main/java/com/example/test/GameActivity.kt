@@ -2,6 +2,7 @@ package com.example.test
 
 import android.graphics.Color
 import android.os.*
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setMargins
 import com.example.test.databinding.ActivityGameBinding
 import java.util.concurrent.TimeUnit
+import kotlin.properties.Delegates.notNull
 import kotlin.random.Random
 
 
@@ -24,8 +26,14 @@ class GameActivity : AppCompatActivity() {
     var TheButtonId: Int=-1//id (місце в масиві) зеленої кнопки
     lateinit var countDownTimer:CountDownTimer
     lateinit var countDownTimer2:CountDownTimer
+    lateinit var countDownTimerPrepareToGame:CountDownTimer
+    var iscountDownTimerActive:Boolean=false
+    var iscountDownTimer2Active:Boolean=false
+    var iscountDownTimerPrepareToGameActive:Boolean=false
 
-
+    //for savedInstanceState
+    var countDownTimerPrepareToGameAllTime:Long=3000
+    var countDown by notNull<Long>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +45,16 @@ class GameActivity : AppCompatActivity() {
         TIMER = intent.getIntExtra(timer, 0)
         MIN_FREQUENCY = intent.getFloatExtra(min_frequency, 0f)
         MAX_FREQUENCY = intent.getFloatExtra(max_frequency, 0f)
-//        println("size_of_matrix=$SIZE_OF_MATRIX, timer=$TIMER, frequency=$MIN_FREQUENCY, $MAX_FREQUENCY")
+        println("size_of_matrix=$SIZE_OF_MATRIX, timer=$TIMER, frequency=$MIN_FREQUENCY, $MAX_FREQUENCY")
+        countDown=(TIMER*1000).toLong()
         if(savedInstanceState!=null){
+            countDownTimerPrepareToGameAllTime=savedInstanceState.getLong(PREPARE_TIMER)
+            countDown=savedInstanceState.getLong(COUNT_DOWN)
+            counter=savedInstanceState.getInt(COUNTER)
+            iscountDownTimerPrepareToGameActive=savedInstanceState.getBoolean(IS_BEGGINING_COUNTER)
+            iscountDownTimerActive=savedInstanceState.getBoolean(IS_FIRST_COUNTER)
+            iscountDownTimer2Active=savedInstanceState.getBoolean(IS_SECOND_COUNTER)
+
 
         }
         var id = 0; //здається навіть id не потрібен
@@ -78,66 +94,85 @@ class GameActivity : AppCompatActivity() {
         }
         setRandomColored(0)
         //просто для наглядності. Потім змінити
-        binding.end.setOnClickListener {setRandomColored(TheButtonId) }
 
+        binding.end.setOnClickListener { onStop()
+            finish() }
     }
 
     override fun onStart() {
         super.onStart()
         CountDown()
-        handler.postDelayed({changeCardsAndTimer()},3200)
-
+        //якщо під час countDownTimerPrepareToGameAllTime затримки був викликаний метод onStop(),
+        //то ми не виконуємо те, що в handler. Як зупинути нормально сам handler незрозуміло
+        handler.postDelayed({ if(iscountDownTimerPrepareToGameActive==true){changeCardsAndTimer()} },
+            countDownTimerPrepareToGameAllTime)
     }
 
     private fun CountDown() {
         binding.tablelayout.visibility= View.GONE
-        var countDownTimer:CountDownTimer = object: CountDownTimer(3000,1000) {
+        countDownTimerPrepareToGame = object: CountDownTimer(countDownTimerPrepareToGameAllTime,1000) {
             override fun onTick(millisUntilFinished: Long) {
+                iscountDownTimerPrepareToGameActive=true
                 var seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)
+                countDownTimerPrepareToGameAllTime=millisUntilFinished//
                 binding.timer.setText("$seconds")
+                Log.v("countDownTimer 1 = ", countDownTimerPrepareToGameAllTime.toString())
             }
 
             override fun onFinish() {
+                countDownTimerPrepareToGameAllTime=0
                 binding.timer.setText("0")
                 binding.tablelayout.visibility= View.VISIBLE
             }
-        }
-        countDownTimer.start()
+        }.start()
 
     }
 
     override fun onStop() {
         super.onStop()
-        countDownTimer.cancel()//закриваємо таймери, щоб на бекграунді не висіли
-        countDownTimer2.cancel()
+        if(iscountDownTimerPrepareToGameActive==true){
+            countDownTimerPrepareToGame.cancel()
+            iscountDownTimerPrepareToGameActive=false
+        }
+        if(iscountDownTimerActive==true){//якщо таймери активні, то закриваємо їх. Інакше при поворотах
+            countDownTimer.cancel()//екрану у нас будуть працювати і старі і нові таймери
+            iscountDownTimerActive=false
+        }
+        if(iscountDownTimer2Active==true){
+            countDownTimer2.cancel()
+            iscountDownTimer2Active=false
+        }
     }
 
     private fun changeCardsAndTimer() {
         //таймер для кнопок
-        countDownTimer = object: CountDownTimer((TIMER*1000).toLong(), (Random.nextDouble(MIN_FREQUENCY.toDouble(), MAX_FREQUENCY.toDouble())*1000).toLong()) {
+        countDownTimer = object: CountDownTimer(countDown+100, (Random.nextDouble(MIN_FREQUENCY.toDouble(), MAX_FREQUENCY.toDouble())*1000).toLong()) {
             override fun onTick(millisUntilFinished: Long) {
+                iscountDownTimerActive=true
                 setRandomColored(TheButtonId)
             }
 
             override fun onFinish() {
-
+                cancel()
             }
-        }
+        }.start()
 
         //таймер для таймера
-        countDownTimer2= object: CountDownTimer((TIMER*1000).toLong(), 1000) {
+        countDownTimer2= object: CountDownTimer(countDown, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                iscountDownTimer2Active=true
+                countDown=millisUntilFinished
                 var seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished)
                 binding.timer.setText("$seconds")
             }
 
             override fun onFinish() {
+                countDown=0
                 binding.timer.setText("0")
                 dialog()
+                cancel()
             }
-        }
-        countDownTimer.start()
-        countDownTimer2.start()
+        }.start()
 //                updateViews()
     }
 
@@ -172,12 +207,26 @@ class GameActivity : AppCompatActivity() {
         val timer: String = "timer"
         val min_frequency: String = "min_frequency"
         val max_frequency: String = "max_frequency"
+        //for saveInstantState
+        private val PREPARE_TIMER="P_TIMER"
+        private val COUNT_DOWN = "C_D"
+        private val TIMER_BUTTONS="T_B"
+        private val COUNTER="COUNTER"
+        private val IS_BEGGINING_COUNTER="IS_BEGGINING_COUNTER"
+        private val IS_FIRST_COUNTER="IS_FIRST_COUNTER"
+        private val IS_SECOND_COUNTER="IS_SECOND_COUNTER"
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-//        outState.put
-//        outState.put
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.v("countDownTimer 2 = ", countDownTimerPrepareToGameAllTime.toString())
+        outState.putLong(PREPARE_TIMER,countDownTimerPrepareToGameAllTime)
+        outState.putLong(COUNT_DOWN, countDown)
+        outState.putInt(COUNTER, counter)
+        outState.putBoolean(IS_BEGGINING_COUNTER, iscountDownTimerPrepareToGameActive)
+        outState.putBoolean(IS_FIRST_COUNTER, iscountDownTimerActive)
+        outState.putBoolean(IS_SECOND_COUNTER, iscountDownTimer2Active)
     }
+
 
 }
