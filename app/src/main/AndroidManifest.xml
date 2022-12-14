@@ -13,6 +13,15 @@
         android:theme="@style/Theme.Test"
         tools:targetApi="31" >
         <activity
+            android:name=".ForWatchingHistoryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_for_watching_history"
+            android:theme="@style/Theme.Test.NoActionBar" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".GameActivity"
             android:exported="false" >
             <meta-data
@@ -35,6 +44,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <service
+                android:name=".SaveIntoFileService"
+                android:exported="false"
+                tools:ignore="WrongManifestParent" />
+
 
             <meta-data
                 android:name="android.app.lib_name"

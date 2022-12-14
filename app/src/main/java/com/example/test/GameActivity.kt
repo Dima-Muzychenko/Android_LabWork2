@@ -1,5 +1,7 @@
 package com.example.test
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.*
 import android.util.Log
@@ -181,9 +183,22 @@ class GameActivity : AppCompatActivity() {
         builder.setTitle("Game is overed")
         builder.setMessage("Your score is $counter")
         builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+            //результати передаємо в службу
+            var intent:Intent = Intent(this, SaveIntoFileService::class.java)
+            intent.setAction(SaveIntoFileService.ACTION_WRITE_TO_FILE)
+            intent.putExtra(SaveIntoFileService.POINTS, counter)//передаємо кількість отриманих балів
+            startService(intent)
+
             finish()
         }
+        sendDataToParameters()
         builder.show()
+    }
+
+    private fun sendDataToParameters() {//передаємо отриманий результат назад в ParametersActivity
+        val intent=Intent()
+        intent.putExtra(GEINED_POINTS,counter)
+        setResult(Activity.RESULT_OK,intent)
     }
 
     private fun countPoints(btn: Button) {
@@ -210,11 +225,12 @@ class GameActivity : AppCompatActivity() {
         //for saveInstantState
         private val PREPARE_TIMER="P_TIMER"
         private val COUNT_DOWN = "C_D"
-        private val TIMER_BUTTONS="T_B"
+//        private val TIMER_BUTTONS="T_B"
         private val COUNTER="COUNTER"
         private val IS_BEGGINING_COUNTER="IS_BEGGINING_COUNTER"
         private val IS_FIRST_COUNTER="IS_FIRST_COUNTER"
         private val IS_SECOND_COUNTER="IS_SECOND_COUNTER"
+        val GEINED_POINTS="GEINED_POINTS"
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
