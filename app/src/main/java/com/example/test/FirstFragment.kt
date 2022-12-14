@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.test.databinding.FragmentFirstBinding
-import com.example.test.databinding.FragmentFirstBinding.*
 
 
 class FirstFragment : Fragment() {
@@ -14,7 +13,7 @@ class FirstFragment : Fragment() {
 private lateinit var binding: FragmentFirstBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-      binding = inflate(inflater, container, false)
+       binding = FragmentFirstBinding.inflate(inflater, container, false)
         binding.buttonFirst.setOnClickListener { backToParmeters() }
         retainInstance=true//зберігання інформації при повороті екрану
 

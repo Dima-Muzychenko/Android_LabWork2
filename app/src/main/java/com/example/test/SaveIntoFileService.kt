@@ -10,7 +10,7 @@ class SaveIntoFileService: IntentService(SaveIntoFileService::class.java.simpleN
     override fun onHandleIntent(intent: Intent?) {
         var action:String = intent?.action!!
         if (action == ACTION_WRITE_TO_FILE){
-            var points:Int=intent.getIntExtra(ACTION_WRITE_TO_FILE,0)//отримуємо бали
+            var points:Int=intent.getIntExtra(POINTS,0)//отримуємо бали
             writeToFile(points)
         }
     }

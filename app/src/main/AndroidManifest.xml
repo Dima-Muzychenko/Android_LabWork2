@@ -45,16 +45,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <service
-                android:name=".SaveIntoFileService"
-                android:exported="false"
-                tools:ignore="WrongManifestParent" />
 
 
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <service
+            android:name=".SaveIntoFileService"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

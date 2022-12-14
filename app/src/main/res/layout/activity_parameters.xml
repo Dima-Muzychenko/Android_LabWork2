@@ -8,25 +8,6 @@
     android:background="@color/LightSteelBlue"
     tools:context=".ParametersActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        >
-
-
-<!--        <androidx.fragment.app.FragmentContainerView-->
-<!--            android:id="@+id/fragmentContainer"-->
-<!--            android:layout_width="200dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:visibility="invisible"/>-->
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
-
 
     <TextView
         android:layout_width="190dp"
