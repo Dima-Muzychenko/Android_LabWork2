@@ -1,5 +1,6 @@
 package com.example.test
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -17,16 +18,17 @@ private lateinit var binding: ActivityForWatchingHistoryBinding
         super.onCreate(savedInstanceState)
      binding = ActivityForWatchingHistoryBinding.inflate(layoutInflater)
      setContentView(binding.root)
+//        var intent: Intent = Intent(this, SaveIntoFileService::class.java)
+//        intent.setAction(SaveIntoFileService.ACTION_RESTORE_FROM_FILE)
+//        startService(intent)
         val fragment:FirstFragment = FirstFragment.newInstance()
+
 
         supportFragmentManager
             .beginTransaction()
             .add(R.id.container_2222,fragment)//саме так потрібно. Не через біндінг
             .commit()
 
-    }
-    fun fin(){
-        finish()
     }
     
 }
