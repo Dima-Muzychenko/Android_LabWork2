@@ -13,6 +13,8 @@ import com.example.test.databinding.ActivityForWatchingHistoryBinding
 class ForWatchingHistoryActivity : AppCompatActivity() {
     
 private lateinit var binding: ActivityForWatchingHistoryBinding
+private var close:Boolean=false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,5 +32,6 @@ private lateinit var binding: ActivityForWatchingHistoryBinding
             .commit()
 
     }
+
     
 }

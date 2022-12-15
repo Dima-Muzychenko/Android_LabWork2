@@ -49,6 +49,7 @@ lateinit var obs:Observe//спостерігач
 
 
     private fun backToParmeters() {
+        activity?.finish()
         parentFragmentManager
             .beginTransaction()
             .remove(this)

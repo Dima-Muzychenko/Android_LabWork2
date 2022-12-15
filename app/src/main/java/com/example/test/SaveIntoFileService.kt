@@ -20,16 +20,6 @@ class SaveIntoFileService: IntentService(SaveIntoFileService::class.java.simpleN
         }
     }
 
-    override fun onCreate() {
-        super.onCreate()
-//        var obs: Observer = applicationContext as Observer
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-    }
-
     private fun writeToFile(points: Int) {//запис в файл (дату ще записати)
         val time = Calendar.getInstance().time
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
@@ -51,8 +41,9 @@ class SaveIntoFileService: IntentService(SaveIntoFileService::class.java.simpleN
                 text = bufferedReader.readLine()
                 text
             } != null) {
-            stringBuilder.append(text)
+            stringBuilder.append(text+"\n")
         }
+        stringBuilder.append("\n")
 
         var obs:Observe = application as Observe
         obs.ReadFromFile(stringBuilder.toString())//передаємо прочитаний текст з файлу слухачу
